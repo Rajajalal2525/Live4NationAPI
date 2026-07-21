@@ -1,0 +1,6 @@
+@Live4Nation.API_HostAddress = http://localhost:5133
+
+GET {{Live4Nation.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

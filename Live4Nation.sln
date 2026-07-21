@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Live4Nation.API", "Live4Nation.API\Live4Nation.API.csproj", "{25ABE7D1-6ECA-4030-888C-F9DE58476702}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Live4Nation.BLL", "Live4Nation.BLL\Live4Nation.BLL.csproj", "{21C7DCC8-3439-4389-B55A-97DEEF4D904F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Live4Nation.DAL", "Live4Nation.DAL\Live4Nation.DAL.csproj", "{23BEEE13-1118-4B8B-A105-4FEC9FBEBFF5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{25ABE7D1-6ECA-4030-888C-F9DE58476702}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25ABE7D1-6ECA-4030-888C-F9DE58476702}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25ABE7D1-6ECA-4030-888C-F9DE58476702}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25ABE7D1-6ECA-4030-888C-F9DE58476702}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21C7DCC8-3439-4389-B55A-97DEEF4D904F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21C7DCC8-3439-4389-B55A-97DEEF4D904F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21C7DCC8-3439-4389-B55A-97DEEF4D904F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21C7DCC8-3439-4389-B55A-97DEEF4D904F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23BEEE13-1118-4B8B-A105-4FEC9FBEBFF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23BEEE13-1118-4B8B-A105-4FEC9FBEBFF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23BEEE13-1118-4B8B-A105-4FEC9FBEBFF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23BEEE13-1118-4B8B-A105-4FEC9FBEBFF5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
