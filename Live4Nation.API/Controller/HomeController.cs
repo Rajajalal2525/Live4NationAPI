@@ -50,5 +50,17 @@ public async Task<IActionResult> GetNewsDetailPage(int id)
     return Ok(result);
 }
 
+[HttpGet("search")]
+public async Task<IActionResult> SearchNews([FromQuery] string keyword, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+{
+    if (string.IsNullOrWhiteSpace(keyword))
+    {
+        return BadRequest(new { message = "Keyword is required." });
+    }
+
+    var result = await _newsService.SearchAsync(keyword, page, pageSize);
+    return Ok(result);
+}
+
     }
 }

@@ -26,5 +26,7 @@ namespace Live4Nation.BLL.Interfaces
         // Home page task 
 
         Task<NewsDetailPageDto?> GetDetailPageAsync(int id);
+
+        Task<PagedResultDto<SearchResponseDto>> SearchAsync(string keyword, int page, int pageSize);
     }
 }

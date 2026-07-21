@@ -660,5 +660,58 @@ public async Task<NewsDetailPageDto?> GetDetailPageAsync(int id)
 }
 
 
-    }
+ public async Task<PagedResultDto<SearchResponseDto>> SearchAsync(string keyword, int page, int pageSize)
+        {
+            var normalizedKeyword = keyword.Trim().ToLower();
+            var query = _context.News
+                .AsNoTracking()
+                .Where(x => x.IsActive)
+                .Where(x =>
+                    x.Title.ToLower().Contains(normalizedKeyword) ||
+                    x.ShortDescription.ToLower().Contains(normalizedKeyword) ||
+                    x.Description.ToLower().Contains(normalizedKeyword) ||
+                    (x.Author != null && x.Author.ToLower().Contains(normalizedKeyword)) ||
+                    (x.Location != null && x.Location.ToLower().Contains(normalizedKeyword)) ||
+                    x.Category.Name.ToLower().Contains(normalizedKeyword));
+
+            var totalRecords = await query.CountAsync();
+            var totalPages = totalRecords == 0
+                ? 0
+                : (int)Math.Ceiling(totalRecords / (double)pageSize);
+
+            var items = await query
+                .OrderByDescending(x => x.PublishedDate)
+                .ThenByDescending(x => x.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(x => new SearchResponseDto
+                {
+                    Id = x.Id,
+                    CategoryId = x.CategoryId,
+                    CategoryName = x.Category.Name,
+                    Title = x.Title,
+                    Slug = x.Slug,
+                    ThumbnailImage = x.ThumbnailImage,
+                    ShortDescription = x.ShortDescription,
+                    Author = x.Author,
+                    Location = x.Location,
+                    PublishedDate = x.PublishedDate,
+                    IsBreaking = x.IsBreaking,
+                    IsTrending = x.IsTrending,
+                    IsFeatured = x.IsFeatured,
+                    IsTopStory = x.IsTopStory,
+                    ViewCount = x.ViewCount
+                })
+                .ToListAsync();
+
+            return new PagedResultDto<SearchResponseDto>
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalRecords = totalRecords,
+                TotalPages = totalPages,
+                Items = items
+            };
+    
+            }    }
 }
