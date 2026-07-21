@@ -9,9 +9,12 @@ namespace Live4Nation.API.Controllers
     {
         private readonly IHomeService _homeService;
 
-        public HomeController(IHomeService homeService)
+         private readonly INewsService _newsService;
+
+        public HomeController(IHomeService homeService, INewsService newsService)
         {
             _homeService = homeService;
+            _newsService = newsService;
         }
 
         [HttpGet]
@@ -30,5 +33,22 @@ namespace Live4Nation.API.Controllers
             var result = await _homeService.GetHomeAsync(sectionTake, categoryTake);
             return Ok(result);
         }
+
+        
+        // Home Page Specific Endpoint
+
+         [HttpGet("{id:int}/page")]
+public async Task<IActionResult> GetNewsDetailPage(int id)
+{
+    var result = await _newsService.GetDetailPageAsync(id);
+
+    if (result == null)
+    {
+        return NotFound(new { message = $"News with ID {id} not found." });
+    }
+
+    return Ok(result);
+}
+
     }
 }

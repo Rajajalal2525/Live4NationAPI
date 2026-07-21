@@ -464,5 +464,201 @@ namespace Live4Nation.BLL.Services
             await _context.SaveChangesAsync();
             return true;
         }
+public async Task<NewsDetailPageDto?> GetDetailPageAsync(int id)
+{
+    // 1. Pehle main news fetch karein (Properly Awaited)
+    var news = await _context.News
+        .AsNoTracking()
+        .Include(x => x.Category)
+        .Include(x => x.NewsImages)
+        .FirstOrDefaultAsync(x => x.Id == id);
+
+    if (news == null)
+    {
+        return null;
+    }
+
+    var currentNewsDto = new NewsDto
+    {
+        Id = news.Id,
+        CategoryId = news.CategoryId,
+        CategoryName = news.Category != null ? news.Category.Name : string.Empty,
+        Title = news.Title,
+        Slug = news.Slug,
+        ShortDescription = news.ShortDescription,
+        Description = news.Description,
+        ThumbnailImage = news.ThumbnailImage,
+        Author = news.Author,
+        Location = news.Location,
+        PublishedDate = news.PublishedDate,
+        IsBreaking = news.IsBreaking,
+        IsTrending = news.IsTrending,
+        IsFeatured = news.IsFeatured,
+        IsTopStory = news.IsTopStory,
+        Priority = news.Priority,
+        ViewCount = news.ViewCount + 1, // Response me hi badha hua view count bhej dete hain
+        IsActive = news.IsActive,
+        CreatedDate = news.CreatedDate,
+        UpdatedDate = news.UpdatedDate
+    };
+
+    // 2. Sequential Awaits: Sabhi database calls ko ek-ek karke await karenge taaki DbContext crash na ho.
+    
+    var relatedNews = await _context.News
+        .AsNoTracking()
+        .Include(x => x.Category)
+        .Where(x => x.IsActive && x.CategoryId == news.CategoryId && x.Id != id)
+        .OrderByDescending(x => x.PublishedDate)
+        .Take(5)
+        .Select(x => new NewsDto
+        {
+            Id = x.Id,
+            CategoryId = x.CategoryId,
+            CategoryName = x.Category.Name,
+            Title = x.Title,
+            Slug = x.Slug,
+            ShortDescription = x.ShortDescription,
+            Description = x.Description,
+            ThumbnailImage = x.ThumbnailImage,
+            Author = x.Author,
+            Location = x.Location,
+            PublishedDate = x.PublishedDate,
+            IsBreaking = x.IsBreaking,
+            IsTrending = x.IsTrending,
+            IsFeatured = x.IsFeatured,
+            IsTopStory = x.IsTopStory,
+            Priority = x.Priority,
+            ViewCount = x.ViewCount,
+            IsActive = x.IsActive,
+            CreatedDate = x.CreatedDate,
+            UpdatedDate = x.UpdatedDate
+        })
+        .ToListAsync();
+
+    // Independent services calls (line-by-line await)
+    var latestNews = await GetLatestAsync(10);
+    var trendingNews = await GetTrendingAsync(10);
+    var breakingNews = await GetBreakingAsync(10);
+
+    var previousNews = await _context.News
+        .AsNoTracking()
+        .Include(x => x.Category)
+        .Where(x => x.IsActive && x.PublishedDate < news.PublishedDate)
+        .OrderByDescending(x => x.PublishedDate)
+        .ThenByDescending(x => x.Id)
+        .Select(x => new NewsDto
+        {
+            Id = x.Id,
+            CategoryId = x.CategoryId,
+            CategoryName = x.Category.Name,
+            Title = x.Title,
+            Slug = x.Slug,
+            ShortDescription = x.ShortDescription,
+            Description = x.Description,
+            ThumbnailImage = x.ThumbnailImage,
+            Author = x.Author,
+            Location = x.Location,
+            PublishedDate = x.PublishedDate,
+            IsBreaking = x.IsBreaking,
+            IsTrending = x.IsTrending,
+            IsFeatured = x.IsFeatured,
+            IsTopStory = x.IsTopStory,
+            Priority = x.Priority,
+            ViewCount = x.ViewCount,
+            IsActive = x.IsActive,
+            CreatedDate = x.CreatedDate,
+            UpdatedDate = x.UpdatedDate
+        })
+        .FirstOrDefaultAsync();
+
+    var nextNews = await _context.News
+        .AsNoTracking()
+        .Include(x => x.Category)
+        .Where(x => x.IsActive && x.PublishedDate > news.PublishedDate)
+        .OrderBy(x => x.PublishedDate)
+        .ThenBy(x => x.Id)
+        .Select(x => new NewsDto
+        {
+            Id = x.Id,
+            CategoryId = x.CategoryId,
+            CategoryName = x.Category.Name,
+            Title = x.Title,
+            Slug = x.Slug,
+            ShortDescription = x.ShortDescription,
+            Description = x.Description,
+            ThumbnailImage = x.ThumbnailImage,
+            Author = x.Author,
+            Location = x.Location,
+            PublishedDate = x.PublishedDate,
+            IsBreaking = x.IsBreaking,
+            IsTrending = x.IsTrending,
+            IsFeatured = x.IsFeatured,
+            IsTopStory = x.IsTopStory,
+            Priority = x.Priority,
+            ViewCount = x.ViewCount,
+            IsActive = x.IsActive,
+            CreatedDate = x.CreatedDate,
+            UpdatedDate = x.UpdatedDate
+        })
+        .FirstOrDefaultAsync();
+
+    var images = await _context.NewsImages
+        .AsNoTracking()
+        .Where(x => x.NewsId == id)
+        .OrderBy(x => x.DisplayOrder)
+        .ThenBy(x => x.Id)
+        .Select(x => new NewsImageDto
+        {
+            Id = x.Id,
+            NewsId = x.NewsId,
+            ImageUrl = x.ImageUrl,
+            Caption = x.Caption,
+            DisplayOrder = x.DisplayOrder,
+            CreatedDate = x.CreatedDate
+        })
+        .ToListAsync();
+
+    var advertisements = await _context.Advertisements
+        .AsNoTracking()
+        .Where(x => x.IsActive)
+        .OrderByDescending(x => x.CreatedDate)
+        .Select(x => new AdvertisementDto
+        {
+            Id = x.Id,
+            Title = x.Title,
+            ImageUrl = x.ImageUrl,
+            RedirectUrl = x.RedirectUrl,
+            Position = x.Position,
+            IsActive = x.IsActive,
+            CreatedDate = x.CreatedDate
+        })
+        .ToListAsync();
+
+    // 3. ViewCount update karne ka sahi tarika (Kyunki main entity AsNoTracking hai)
+    // Ek alag direct query se execute karenge taaki performance bani rahe aur error na aaye
+    await _context.Database.ExecuteSqlRawAsync(
+        "UPDATE News SET ViewCount = ViewCount + 1 WHERE Id = {0}", id);
+
+    return new NewsDetailPageDto
+    {
+        News = currentNewsDto,
+        Images = images,
+        RelatedNews = relatedNews,
+        LatestNews = latestNews,
+        TrendingNews = trendingNews,
+        BreakingNews = breakingNews,
+        PreviousNews = previousNews,
+        NextNews = nextNews,
+        Advertisements = new NewsDetailPageAdvertisementsDto
+        {
+            Top = advertisements.Where(x => string.Equals(x.Position, "Top", StringComparison.OrdinalIgnoreCase)).ToList(),
+            Middle = advertisements.Where(x => string.Equals(x.Position, "Middle", StringComparison.OrdinalIgnoreCase)).ToList(),
+            Sidebar = advertisements.Where(x => string.Equals(x.Position, "Sidebar", StringComparison.OrdinalIgnoreCase)).ToList(),
+            Bottom = advertisements.Where(x => string.Equals(x.Position, "Bottom", StringComparison.OrdinalIgnoreCase) || string.Equals(x.Position, "Footer", StringComparison.OrdinalIgnoreCase)).ToList()
+        }
+    };
+}
+
+
     }
 }
