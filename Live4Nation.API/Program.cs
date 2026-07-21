@@ -25,6 +25,7 @@ builder.Services.AddScoped<INewsService, NewsService>();
 builder.Services.AddScoped<IGalleryService, GalleryService>();
 builder.Services.AddScoped<IVideoService, VideoService>();
 builder.Services.AddScoped<IContactService, ContactService>();
+builder.Services.AddScoped<IHomeService, HomeService>();
 
 // AuthService ko register kiya
 builder.Services.AddScoped<IAuthService, AuthService>();
