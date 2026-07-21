@@ -62,5 +62,26 @@ public async Task<IActionResult> SearchNews([FromQuery] string keyword, [FromQue
     return Ok(result);
 }
 
+[HttpGet("all")]
+public async Task<IActionResult> GetAllNewsListing([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] int? categoryId = null, [FromQuery] string? location = null, [FromQuery] string? search = null, [FromQuery] bool? isBreaking = null, [FromQuery] bool? isTrending = null, [FromQuery] bool? isFeatured = null, [FromQuery] bool? isTopStory = null, [FromQuery] DateTime? fromDate = null, [FromQuery] DateTime? toDate = null, [FromQuery] string? sortBy = null)
+{
+    try
+    {
+        var result = await _newsService.GetAllPagedAsync(page, pageSize, categoryId, location, search, isBreaking, isTrending, isFeatured, isTopStory, fromDate, toDate, sortBy);
+        
+        return Ok(result);
+    }
+    catch (ApplicationException ex)
+    {
+        // Service layer se aane wali custom managed errors ke liye
+        return StatusCode(500, new { message = ex.Message, details = ex.InnerException?.Message });
+    }
+    catch (Exception ex)
+    {
+        // Kisi bhi unexpected system crash ke liye
+        return StatusCode(500, new { message = "An unexpected error occurred on the server.", details = ex.Message });
+    }
+}
+
     }
 }

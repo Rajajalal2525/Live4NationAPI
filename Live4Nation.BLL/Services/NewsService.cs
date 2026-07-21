@@ -713,5 +713,127 @@ public async Task<NewsDetailPageDto?> GetDetailPageAsync(int id)
                 Items = items
             };
     
-            }    }
+            } 
+
+
+public async Task<PagedResultDto<NewsDto>> GetAllPagedAsync(int page = 1, int pageSize = 10, int? categoryId = null, string? location = null, string? search = null, bool? isBreaking = null, bool? isTrending = null, bool? isFeatured = null, bool? isTopStory = null, DateTime? fromDate = null, DateTime? toDate = null, string? sortBy = null)
+{
+    try
+    {
+        // 1. Pagination Inputs Validation
+        page = page < 1 ? 1 : page;
+        pageSize = pageSize < 1 ? 10 : pageSize;
+
+        // 2. Base Query Setup
+        IQueryable<News> query = _context.News
+            .AsNoTracking()
+            .Where(x => x.IsActive);
+
+        // 3. Conditional Filtering
+        if (categoryId.HasValue)
+        {
+            query = query.Where(x => x.CategoryId == categoryId.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(location))
+        {
+            var normalizedLocation = location.Trim();
+            query = query.Where(x => x.Location != null && x.Location.Contains(normalizedLocation));
+        }
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var keyword = search.Trim();
+            query = query.Where(x =>
+                x.Title.Contains(keyword) ||
+                x.ShortDescription.Contains(keyword) ||
+                x.Description.Contains(keyword) ||
+                (x.Author != null && x.Author.Contains(keyword)) ||
+                (x.Location != null && x.Location.Contains(keyword)) ||
+                (x.Category != null && x.Category.Name.Contains(keyword)));
+        }
+
+        if (isBreaking.HasValue) query = query.Where(x => x.IsBreaking == isBreaking.Value);
+        if (isTrending.HasValue) query = query.Where(x => x.IsTrending == isTrending.Value);
+        if (isFeatured.HasValue) query = query.Where(x => x.IsFeatured == isFeatured.Value);
+        if (isTopStory.HasValue) query = query.Where(x => x.IsTopStory == isTopStory.Value);
+
+        // 4. Date Filtering
+        if (fromDate.HasValue)
+        {
+            var from = fromDate.Value.Date;
+            query = query.Where(x => x.PublishedDate >= from);
+        }
+
+        if (toDate.HasValue)
+        {
+            var to = toDate.Value.Date.AddDays(1).AddTicks(-1);
+            query = query.Where(x => x.PublishedDate <= to);
+        }
+
+        // 5. Dynamic Sorting
+        query = (sortBy ?? "Latest").Trim().ToLowerInvariant() switch
+        {
+            "oldest" => query.OrderBy(x => x.PublishedDate).ThenBy(x => x.Id),
+            "mostviewed" => query.OrderByDescending(x => x.ViewCount).ThenByDescending(x => x.PublishedDate),
+            "priority" => query.OrderBy(x => x.Priority).ThenByDescending(x => x.PublishedDate),
+            _ => query.OrderByDescending(x => x.PublishedDate).ThenByDescending(x => x.Id)
+        };
+
+        // 6. Execution & Pagination
+        var totalRecords = await query.CountAsync();
+        var totalPages = totalRecords == 0 ? 0 : (int)Math.Ceiling(totalRecords / (double)pageSize);
+
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new NewsDto
+            {
+                Id = x.Id,
+                CategoryId = x.CategoryId,
+                CategoryName = x.Category != null ? x.Category.Name : string.Empty,
+                Title = x.Title,
+                Slug = x.Slug,
+                ShortDescription = x.ShortDescription,
+                Description = x.Description,
+                ThumbnailImage = x.ThumbnailImage,
+                Author = x.Author,
+                Location = x.Location,
+                PublishedDate = x.PublishedDate,
+                IsBreaking = x.IsBreaking,
+                IsTrending = x.IsTrending,
+                IsFeatured = x.IsFeatured,
+                IsTopStory = x.IsTopStory,
+                Priority = x.Priority,
+                ViewCount = x.ViewCount,
+                IsActive = x.IsActive,
+                CreatedDate = x.CreatedDate,
+                UpdatedDate = x.UpdatedDate
+            })
+            .ToListAsync();
+
+        return new PagedResultDto<NewsDto>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalRecords = totalRecords,
+            TotalPages = totalPages,
+            Items = items
+        };
+    }
+    catch (Exception ex)
+    {
+        // Yahan aap apna logger use kar sakte hain, jaise: _logger.LogError(ex, "Error occurred in GetAllPagedAsync");
+        // Abhi ke liye ye exception ko properly details ke sath re-throw karega taaki controller use safely capture kar sake
+        throw new ApplicationException("An error occurred while fetching paged news data.", ex);
+    }
+}
+            
+            
+            
+            
+            
+            
+            
+   }
 }
