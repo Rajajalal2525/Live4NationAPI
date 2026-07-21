@@ -127,6 +127,23 @@ namespace Live4Nation.API.Controllers
             return Ok(result);
         }
 
+        [HttpPost("{id:int}/view")]
+        public async Task<IActionResult> IncrementNewsViewCount(int id)
+        {
+            var viewCount = await _newsService.IncrementViewCountAsync(id);
+
+            if (viewCount == null)
+            {
+                return NotFound(new { message = $"News with ID {id} not found." });
+            }
+
+            return Ok(new
+            {
+                newsId = id,
+                viewCount = viewCount.Value
+            });
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateNews([FromBody] NewsCreateUpdateDto dto)
         {
@@ -292,20 +309,5 @@ namespace Live4Nation.API.Controllers
         }
 
         #endregion
-
-        // Home Page Specific Endpoint
-
-         [HttpGet("{id:int}/page")]
-public async Task<IActionResult> GetNewsDetailPage(int id)
-{
-    var result = await _newsService.GetDetailPageAsync(id);
-
-    if (result == null)
-    {
-        return NotFound(new { message = $"News with ID {id} not found." });
-    }
-
-    return Ok(result);
-}
     }
 }
