@@ -1091,5 +1091,23 @@ namespace Live4Nation.BLL.Services
         }
 
 
+        public async Task<NewsDetailPageDto?> GetNewsBySlugAsync(string slug)
+        {
+            var news = await _context.News
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.IsActive && x.Slug.ToLower() == slug.ToLower());
+
+            if (news == null)
+            {
+                return null;
+            }
+
+            // Increment ViewCount and update UpdatedDate in a single efficient operation
+            await _context.Database.ExecuteSqlInterpolatedAsync(
+                $"UPDATE News SET ViewCount = ViewCount + 1, UpdatedDate = {DateTime.UtcNow} WHERE Id = {news.Id}");
+
+            // Reuse the existing method to get all page details
+            return await GetDetailPageAsync(news.Id);
+        }
     }
 }

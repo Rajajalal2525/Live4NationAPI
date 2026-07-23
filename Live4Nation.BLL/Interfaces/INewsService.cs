@@ -28,6 +28,8 @@ namespace Live4Nation.BLL.Interfaces
 
         Task<NewsDetailPageDto?> GetDetailPageAsync(int id);
 
+        Task<NewsDetailPageDto?> GetNewsBySlugAsync(string slug);
+
         Task<PagedResultDto<SearchResponseDto>> SearchAsync(string keyword, int page, int pageSize);
 
         Task<PagedResultDto<NewsDto>> GetAllPagedAsync(int page = 1, int pageSize = 10, int? categoryId = null, string? location = null, string? search = null, bool? isBreaking = null, bool? isTrending = null, bool? isFeatured = null, bool? isTopStory = null, DateTime? fromDate = null, DateTime? toDate = null, string? sortBy = null);

@@ -127,6 +127,17 @@ namespace Live4Nation.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("slug/{slug}")]
+        public async Task<IActionResult> GetNewsBySlug(string slug)
+        {
+            var result = await _newsService.GetNewsBySlugAsync(slug);
+            if (result == null)
+            {
+                return NotFound(new { message = $"News with slug '{slug}' not found." });
+            }
+            return Ok(result);
+        }
+
         [HttpPost("{id:int}/view")]
         public async Task<IActionResult> IncrementNewsViewCount(int id)
         {
