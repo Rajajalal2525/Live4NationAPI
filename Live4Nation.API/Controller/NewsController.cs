@@ -138,23 +138,6 @@ namespace Live4Nation.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost("{id:int}/view")]
-        public async Task<IActionResult> IncrementNewsViewCount(int id)
-        {
-            var viewCount = await _newsService.IncrementViewCountAsync(id);
-
-            if (viewCount == null)
-            {
-                return NotFound(new { message = $"News with ID {id} not found." });
-            }
-
-            return Ok(new
-            {
-                newsId = id,
-                viewCount = viewCount.Value
-            });
-        }
-
         [HttpPost]
         public async Task<IActionResult> CreateNews([FromBody] NewsCreateUpdateDto dto)
         {
@@ -274,49 +257,6 @@ namespace Live4Nation.API.Controllers
             }
             
             return Ok(result);
-        }
-
-        #endregion
-
-        #region News Images Endpoints
-
-        [HttpPost("{newsId:int}/images")]
-        public async Task<IActionResult> AddImage(int newsId, [FromBody] NewsImageCreateDto dto)
-        {
-            var created = await _newsService.AddImageAsync(newsId, dto);
-
-            if (created == null)
-            {
-                return NotFound(new { message = $"Failed to add image. News with ID {newsId} not found." });
-            }
-
-            return Ok(created);
-        }
-
-        [HttpGet("{newsId:int}/images")]
-        public async Task<IActionResult> GetImagesByNewsId(int newsId)
-        {
-            var result = await _newsService.GetImagesByNewsIdAsync(newsId);
-            
-            if (result == null || !result.Any())
-            {
-                return NotFound(new { message = $"No images found for News ID {newsId}." });
-            }
-            
-            return Ok(result);
-        }
-
-        [HttpDelete("images/{imageId:int}")]
-        public async Task<IActionResult> DeleteImage(int imageId)
-        {
-            var deleted = await _newsService.DeleteImageAsync(imageId);
-
-            if (!deleted)
-            {
-                return NotFound(new { message = $"Image with ID {imageId} not found." });
-            }
-
-            return Ok(new { message = "Image deleted successfully." });
         }
 
         #endregion

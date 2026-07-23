@@ -46,7 +46,8 @@ namespace Live4Nation.BLL.Services
                 ViewCount = news.ViewCount,
                 IsActive = news.IsActive,
                 CreatedDate = news.CreatedDate,
-                UpdatedDate = news.UpdatedDate
+                UpdatedDate = news.UpdatedDate,
+                NewsImages = news.NewsImages.Select(MapImageToDto).ToList()
             };
         }
 
@@ -67,36 +68,15 @@ namespace Live4Nation.BLL.Services
         {
             return _context.News
                 .AsNoTracking()
-                .Include(x => x.Category);
+                .Include(x => x.Category)
+                .Include(x => x.NewsImages);
         }
 
         public async Task<List<NewsDto>> GetAllAsync()
         {
             return await NewsQuery()
                 .OrderByDescending(x => x.PublishedDate)
-                .Select(x => new NewsDto
-                {
-                    Id = x.Id,
-                    CategoryId = x.CategoryId,
-                    CategoryName = x.Category.Name,
-                    Title = x.Title,
-                    Slug = x.Slug,
-                    ShortDescription = x.ShortDescription,
-                    Description = x.Description,
-                    ThumbnailImage = x.ThumbnailImage,
-                    Author = x.Author,
-                    Location = x.Location,
-                    PublishedDate = x.PublishedDate,
-                    IsBreaking = x.IsBreaking,
-                    IsTrending = x.IsTrending,
-                    IsFeatured = x.IsFeatured,
-                    IsTopStory = x.IsTopStory,
-                    Priority = x.Priority,
-                    ViewCount = x.ViewCount,
-                    IsActive = x.IsActive,
-                    CreatedDate = x.CreatedDate,
-                    UpdatedDate = x.UpdatedDate
-                })
+                .Select(x => MapToDto(x))
                 .ToListAsync();
         }
 
@@ -136,29 +116,7 @@ namespace Live4Nation.BLL.Services
             return await NewsQuery()
                 .OrderByDescending(x => x.PublishedDate)
                 .Take(take)
-                .Select(x => new NewsDto
-                {
-                    Id = x.Id,
-                    CategoryId = x.CategoryId,
-                    CategoryName = x.Category.Name,
-                    Title = x.Title,
-                    Slug = x.Slug,
-                    ShortDescription = x.ShortDescription,
-                    Description = x.Description,
-                    ThumbnailImage = x.ThumbnailImage,
-                    Author = x.Author,
-                    Location = x.Location,
-                    PublishedDate = x.PublishedDate,
-                    IsBreaking = x.IsBreaking,
-                    IsTrending = x.IsTrending,
-                    IsFeatured = x.IsFeatured,
-                    IsTopStory = x.IsTopStory,
-                    Priority = x.Priority,
-                    ViewCount = x.ViewCount,
-                    IsActive = x.IsActive,
-                    CreatedDate = x.CreatedDate,
-                    UpdatedDate = x.UpdatedDate
-                })
+                .Select(x => MapToDto(x))
                 .ToListAsync();
         }
 
@@ -168,29 +126,7 @@ namespace Live4Nation.BLL.Services
                 .Where(x => x.IsBreaking)
                 .OrderByDescending(x => x.PublishedDate)
                 .Take(take)
-                .Select(x => new NewsDto
-                {
-                    Id = x.Id,
-                    CategoryId = x.CategoryId,
-                    CategoryName = x.Category.Name,
-                    Title = x.Title,
-                    Slug = x.Slug,
-                    ShortDescription = x.ShortDescription,
-                    Description = x.Description,
-                    ThumbnailImage = x.ThumbnailImage,
-                    Author = x.Author,
-                    Location = x.Location,
-                    PublishedDate = x.PublishedDate,
-                    IsBreaking = x.IsBreaking,
-                    IsTrending = x.IsTrending,
-                    IsFeatured = x.IsFeatured,
-                    IsTopStory = x.IsTopStory,
-                    Priority = x.Priority,
-                    ViewCount = x.ViewCount,
-                    IsActive = x.IsActive,
-                    CreatedDate = x.CreatedDate,
-                    UpdatedDate = x.UpdatedDate
-                })
+                .Select(x => MapToDto(x))
                 .ToListAsync();
         }
 
@@ -200,29 +136,7 @@ namespace Live4Nation.BLL.Services
                 .Where(x => x.IsTrending)
                 .OrderByDescending(x => x.PublishedDate)
                 .Take(take)
-                .Select(x => new NewsDto
-                {
-                    Id = x.Id,
-                    CategoryId = x.CategoryId,
-                    CategoryName = x.Category.Name,
-                    Title = x.Title,
-                    Slug = x.Slug,
-                    ShortDescription = x.ShortDescription,
-                    Description = x.Description,
-                    ThumbnailImage = x.ThumbnailImage,
-                    Author = x.Author,
-                    Location = x.Location,
-                    PublishedDate = x.PublishedDate,
-                    IsBreaking = x.IsBreaking,
-                    IsTrending = x.IsTrending,
-                    IsFeatured = x.IsFeatured,
-                    IsTopStory = x.IsTopStory,
-                    Priority = x.Priority,
-                    ViewCount = x.ViewCount,
-                    IsActive = x.IsActive,
-                    CreatedDate = x.CreatedDate,
-                    UpdatedDate = x.UpdatedDate
-                })
+                .Select(x => MapToDto(x))
                 .ToListAsync();
         }
 
@@ -232,29 +146,7 @@ namespace Live4Nation.BLL.Services
                 .Where(x => x.IsFeatured)
                 .OrderByDescending(x => x.PublishedDate)
                 .Take(take)
-                .Select(x => new NewsDto
-                {
-                    Id = x.Id,
-                    CategoryId = x.CategoryId,
-                    CategoryName = x.Category.Name,
-                    Title = x.Title,
-                    Slug = x.Slug,
-                    ShortDescription = x.ShortDescription,
-                    Description = x.Description,
-                    ThumbnailImage = x.ThumbnailImage,
-                    Author = x.Author,
-                    Location = x.Location,
-                    PublishedDate = x.PublishedDate,
-                    IsBreaking = x.IsBreaking,
-                    IsTrending = x.IsTrending,
-                    IsFeatured = x.IsFeatured,
-                    IsTopStory = x.IsTopStory,
-                    Priority = x.Priority,
-                    ViewCount = x.ViewCount,
-                    IsActive = x.IsActive,
-                    CreatedDate = x.CreatedDate,
-                    UpdatedDate = x.UpdatedDate
-                })
+                .Select(x => MapToDto(x))
                 .ToListAsync();
         }
 
@@ -264,29 +156,7 @@ namespace Live4Nation.BLL.Services
                 .Where(x => x.IsTopStory)
                 .OrderByDescending(x => x.PublishedDate)
                 .Take(take)
-                .Select(x => new NewsDto
-                {
-                    Id = x.Id,
-                    CategoryId = x.CategoryId,
-                    CategoryName = x.Category.Name,
-                    Title = x.Title,
-                    Slug = x.Slug,
-                    ShortDescription = x.ShortDescription,
-                    Description = x.Description,
-                    ThumbnailImage = x.ThumbnailImage,
-                    Author = x.Author,
-                    Location = x.Location,
-                    PublishedDate = x.PublishedDate,
-                    IsBreaking = x.IsBreaking,
-                    IsTrending = x.IsTrending,
-                    IsFeatured = x.IsFeatured,
-                    IsTopStory = x.IsTopStory,
-                    Priority = x.Priority,
-                    ViewCount = x.ViewCount,
-                    IsActive = x.IsActive,
-                    CreatedDate = x.CreatedDate,
-                    UpdatedDate = x.UpdatedDate
-                })
+                .Select(x => MapToDto(x))
                 .ToListAsync();
         }
 
@@ -295,29 +165,7 @@ namespace Live4Nation.BLL.Services
             return await NewsQuery()
                 .Where(x => x.CategoryId == categoryId)
                 .OrderByDescending(x => x.PublishedDate)
-                .Select(x => new NewsDto
-                {
-                    Id = x.Id,
-                    CategoryId = x.CategoryId,
-                    CategoryName = x.Category.Name,
-                    Title = x.Title,
-                    Slug = x.Slug,
-                    ShortDescription = x.ShortDescription,
-                    Description = x.Description,
-                    ThumbnailImage = x.ThumbnailImage,
-                    Author = x.Author,
-                    Location = x.Location,
-                    PublishedDate = x.PublishedDate,
-                    IsBreaking = x.IsBreaking,
-                    IsTrending = x.IsTrending,
-                    IsFeatured = x.IsFeatured,
-                    IsTopStory = x.IsTopStory,
-                    Priority = x.Priority,
-                    ViewCount = x.ViewCount,
-                    IsActive = x.IsActive,
-                    CreatedDate = x.CreatedDate,
-                    UpdatedDate = x.UpdatedDate
-                })
+                .Select(x => MapToDto(x))
                 .ToListAsync();
         }
 
@@ -329,6 +177,8 @@ namespace Live4Nation.BLL.Services
                 return null;
             }
 
+            var orderedImages = dto.NewsImages.OrderBy(i => i.DisplayOrder).ToList();
+            
             var entity = new News
             {
                 CategoryId = dto.CategoryId,
@@ -336,7 +186,7 @@ namespace Live4Nation.BLL.Services
                 Slug = string.IsNullOrWhiteSpace(dto.Slug) ? BuildSlug(dto.Title) : dto.Slug.Trim(),
                 ShortDescription = dto.ShortDescription.Trim(),
                 Description = dto.Description.Trim(),
-                ThumbnailImage = dto.ThumbnailImage.Trim(),
+                ThumbnailImage = orderedImages.FirstOrDefault()?.ImageUrl ?? string.Empty,
                 Author = string.IsNullOrWhiteSpace(dto.Author) ? null : dto.Author.Trim(),
                 Location = string.IsNullOrWhiteSpace(dto.Location) ? null : dto.Location.Trim(),
                 PublishedDate = dto.PublishedDate,
@@ -347,7 +197,13 @@ namespace Live4Nation.BLL.Services
                 Priority = dto.Priority,
                 ViewCount = dto.ViewCount,
                 IsActive = dto.IsActive,
-                CreatedDate = DateTime.UtcNow
+                CreatedDate = DateTime.UtcNow,
+                NewsImages = orderedImages.Select(imgDto => new NewsImage
+                {
+                    ImageUrl = imgDto.ImageUrl,
+                    Caption = imgDto.Caption,
+                    DisplayOrder = imgDto.DisplayOrder
+                }).ToList()
             };
 
             _context.News.Add(entity);
@@ -356,6 +212,7 @@ namespace Live4Nation.BLL.Services
             var created = await _context.News
                 .AsNoTracking()
                 .Include(x => x.Category)
+                .Include(x => x.NewsImages)
                 .FirstOrDefaultAsync(x => x.Id == entity.Id);
 
             return created == null ? null : MapToDto(created);
@@ -363,7 +220,10 @@ namespace Live4Nation.BLL.Services
 
         public async Task<bool> UpdateAsync(int id, NewsCreateUpdateDto dto)
         {
-            var entity = await _context.News.FirstOrDefaultAsync(x => x.Id == id);
+            var entity = await _context.News
+                .Include(n => n.NewsImages)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             if (entity == null)
             {
                 return false;
@@ -380,7 +240,6 @@ namespace Live4Nation.BLL.Services
             entity.Slug = string.IsNullOrWhiteSpace(dto.Slug) ? BuildSlug(dto.Title) : dto.Slug.Trim();
             entity.ShortDescription = dto.ShortDescription.Trim();
             entity.Description = dto.Description.Trim();
-            entity.ThumbnailImage = dto.ThumbnailImage.Trim();
             entity.Author = string.IsNullOrWhiteSpace(dto.Author) ? null : dto.Author.Trim();
             entity.Location = string.IsNullOrWhiteSpace(dto.Location) ? null : dto.Location.Trim();
             entity.PublishedDate = dto.PublishedDate;
@@ -392,6 +251,44 @@ namespace Live4Nation.BLL.Services
             entity.ViewCount = dto.ViewCount;
             entity.IsActive = dto.IsActive;
             entity.UpdatedDate = DateTime.UtcNow;
+
+            var orderedImages = dto.NewsImages.OrderBy(i => i.DisplayOrder).ToList();
+            entity.ThumbnailImage = orderedImages.FirstOrDefault()?.ImageUrl ?? string.Empty;
+
+            // Update Images
+            var imageDtos = dto.NewsImages.ToDictionary(i => i.Id);
+            var existingImages = entity.NewsImages.ToDictionary(i => i.Id);
+
+            // Remove images
+            foreach (var existingImage in existingImages.Values)
+            {
+                if (!imageDtos.ContainsKey(existingImage.Id))
+                {
+                    _context.NewsImages.Remove(existingImage);
+                }
+            }
+
+            // Add or update images
+            foreach (var imageDto in dto.NewsImages)
+            {
+                if (imageDto.Id.HasValue && existingImages.TryGetValue(imageDto.Id.Value, out var existingImage))
+                {
+                    // Update existing image
+                    existingImage.ImageUrl = imageDto.ImageUrl;
+                    existingImage.Caption = imageDto.Caption;
+                    existingImage.DisplayOrder = imageDto.DisplayOrder;
+                }
+                else
+                {
+                    // Add new image
+                    entity.NewsImages.Add(new NewsImage
+                    {
+                        ImageUrl = imageDto.ImageUrl,
+                        Caption = imageDto.Caption,
+                        DisplayOrder = imageDto.DisplayOrder
+                    });
+                }
+            }
 
             await _context.SaveChangesAsync();
             return true;
@@ -410,78 +307,6 @@ namespace Live4Nation.BLL.Services
             return true;
         }
 
-        public async Task<long?> IncrementViewCountAsync(int id)
-        {
-            var newsExists = await _context.News.AnyAsync(x => x.Id == id);
-            if (!newsExists)
-            {
-                return null;
-            }
-
-            await _context.Database.ExecuteSqlInterpolatedAsync(
-                $"UPDATE News SET ViewCount = ViewCount + 1, UpdatedDate = {DateTime.UtcNow} WHERE Id = {id}");
-
-            return await _context.News
-                .AsNoTracking()
-                .Where(x => x.Id == id)
-                .Select(x => x.ViewCount)
-                .FirstAsync();
-        }
-
-        public async Task<NewsImageDto?> AddImageAsync(int newsId, NewsImageCreateDto dto)
-        {
-            var newsExists = await _context.News.AnyAsync(x => x.Id == newsId);
-            if (!newsExists)
-            {
-                return null;
-            }
-
-            var image = new NewsImage
-            {
-                NewsId = newsId,
-                ImageUrl = dto.ImageUrl.Trim(),
-                Caption = string.IsNullOrWhiteSpace(dto.Caption) ? null : dto.Caption.Trim(),
-                DisplayOrder = dto.DisplayOrder,
-                CreatedDate = DateTime.UtcNow
-            };
-
-            _context.NewsImages.Add(image);
-            await _context.SaveChangesAsync();
-
-            return MapImageToDto(image);
-        }
-
-        public async Task<List<NewsImageDto>> GetImagesByNewsIdAsync(int newsId)
-        {
-            return await _context.NewsImages
-                .AsNoTracking()
-                .Where(x => x.NewsId == newsId)
-                .OrderBy(x => x.DisplayOrder)
-                .ThenBy(x => x.Id)
-                .Select(x => new NewsImageDto
-                {
-                    Id = x.Id,
-                    NewsId = x.NewsId,
-                    ImageUrl = x.ImageUrl,
-                    Caption = x.Caption,
-                    DisplayOrder = x.DisplayOrder,
-                    CreatedDate = x.CreatedDate
-                })
-                .ToListAsync();
-        }
-
-        public async Task<bool> DeleteImageAsync(int imageId)
-        {
-            var image = await _context.NewsImages.FirstOrDefaultAsync(x => x.Id == imageId);
-            if (image == null)
-            {
-                return false;
-            }
-
-            _context.NewsImages.Remove(image);
-            await _context.SaveChangesAsync();
-            return true;
-        }
         public async Task<NewsDetailPageDto?> GetDetailPageAsync(int id)
         {
             // 1. Pehle main news fetch karein (Properly Awaited)
@@ -496,29 +321,7 @@ namespace Live4Nation.BLL.Services
                 return null;
             }
 
-            var currentNewsDto = new NewsDto
-            {
-                Id = news.Id,
-                CategoryId = news.CategoryId,
-                CategoryName = news.Category != null ? news.Category.Name : string.Empty,
-                Title = news.Title,
-                Slug = news.Slug,
-                ShortDescription = news.ShortDescription,
-                Description = news.Description,
-                ThumbnailImage = news.ThumbnailImage,
-                Author = news.Author,
-                Location = news.Location,
-                PublishedDate = news.PublishedDate,
-                IsBreaking = news.IsBreaking,
-                IsTrending = news.IsTrending,
-                IsFeatured = news.IsFeatured,
-                IsTopStory = news.IsTopStory,
-                Priority = news.Priority,
-                ViewCount = news.ViewCount,
-                IsActive = news.IsActive,
-                CreatedDate = news.CreatedDate,
-                UpdatedDate = news.UpdatedDate
-            };
+            var currentNewsDto = MapToDto(news);
 
             // 2. Sequential Awaits: Sabhi database calls ko ek-ek karke await karenge taaki DbContext crash na ho.
 
@@ -528,29 +331,7 @@ namespace Live4Nation.BLL.Services
                 .Where(x => x.IsActive && x.CategoryId == news.CategoryId && x.Id != id)
                 .OrderByDescending(x => x.PublishedDate)
                 .Take(5)
-                .Select(x => new NewsDto
-                {
-                    Id = x.Id,
-                    CategoryId = x.CategoryId,
-                    CategoryName = x.Category.Name,
-                    Title = x.Title,
-                    Slug = x.Slug,
-                    ShortDescription = x.ShortDescription,
-                    Description = x.Description,
-                    ThumbnailImage = x.ThumbnailImage,
-                    Author = x.Author,
-                    Location = x.Location,
-                    PublishedDate = x.PublishedDate,
-                    IsBreaking = x.IsBreaking,
-                    IsTrending = x.IsTrending,
-                    IsFeatured = x.IsFeatured,
-                    IsTopStory = x.IsTopStory,
-                    Priority = x.Priority,
-                    ViewCount = x.ViewCount,
-                    IsActive = x.IsActive,
-                    CreatedDate = x.CreatedDate,
-                    UpdatedDate = x.UpdatedDate
-                })
+                .Select(x => MapToDto(x))
                 .ToListAsync();
 
             // Independent services calls (line-by-line await)
@@ -564,29 +345,7 @@ namespace Live4Nation.BLL.Services
                 .Where(x => x.IsActive && x.PublishedDate < news.PublishedDate)
                 .OrderByDescending(x => x.PublishedDate)
                 .ThenByDescending(x => x.Id)
-                .Select(x => new NewsDto
-                {
-                    Id = x.Id,
-                    CategoryId = x.CategoryId,
-                    CategoryName = x.Category.Name,
-                    Title = x.Title,
-                    Slug = x.Slug,
-                    ShortDescription = x.ShortDescription,
-                    Description = x.Description,
-                    ThumbnailImage = x.ThumbnailImage,
-                    Author = x.Author,
-                    Location = x.Location,
-                    PublishedDate = x.PublishedDate,
-                    IsBreaking = x.IsBreaking,
-                    IsTrending = x.IsTrending,
-                    IsFeatured = x.IsFeatured,
-                    IsTopStory = x.IsTopStory,
-                    Priority = x.Priority,
-                    ViewCount = x.ViewCount,
-                    IsActive = x.IsActive,
-                    CreatedDate = x.CreatedDate,
-                    UpdatedDate = x.UpdatedDate
-                })
+                .Select(x => MapToDto(x))
                 .FirstOrDefaultAsync();
 
             var nextNews = await _context.News
@@ -595,29 +354,7 @@ namespace Live4Nation.BLL.Services
                 .Where(x => x.IsActive && x.PublishedDate > news.PublishedDate)
                 .OrderBy(x => x.PublishedDate)
                 .ThenBy(x => x.Id)
-                .Select(x => new NewsDto
-                {
-                    Id = x.Id,
-                    CategoryId = x.CategoryId,
-                    CategoryName = x.Category.Name,
-                    Title = x.Title,
-                    Slug = x.Slug,
-                    ShortDescription = x.ShortDescription,
-                    Description = x.Description,
-                    ThumbnailImage = x.ThumbnailImage,
-                    Author = x.Author,
-                    Location = x.Location,
-                    PublishedDate = x.PublishedDate,
-                    IsBreaking = x.IsBreaking,
-                    IsTrending = x.IsTrending,
-                    IsFeatured = x.IsFeatured,
-                    IsTopStory = x.IsTopStory,
-                    Priority = x.Priority,
-                    ViewCount = x.ViewCount,
-                    IsActive = x.IsActive,
-                    CreatedDate = x.CreatedDate,
-                    UpdatedDate = x.UpdatedDate
-                })
+                .Select(x => MapToDto(x))
                 .FirstOrDefaultAsync();
 
             var images = await _context.NewsImages
@@ -800,29 +537,7 @@ namespace Live4Nation.BLL.Services
                 var items = await query
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
-                    .Select(x => new NewsDto
-                    {
-                        Id = x.Id,
-                        CategoryId = x.CategoryId,
-                        CategoryName = x.Category != null ? x.Category.Name : string.Empty,
-                        Title = x.Title,
-                        Slug = x.Slug,
-                        ShortDescription = x.ShortDescription,
-                        Description = x.Description,
-                        ThumbnailImage = x.ThumbnailImage,
-                        Author = x.Author,
-                        Location = x.Location,
-                        PublishedDate = x.PublishedDate,
-                        IsBreaking = x.IsBreaking,
-                        IsTrending = x.IsTrending,
-                        IsFeatured = x.IsFeatured,
-                        IsTopStory = x.IsTopStory,
-                        Priority = x.Priority,
-                        ViewCount = x.ViewCount,
-                        IsActive = x.IsActive,
-                        CreatedDate = x.CreatedDate,
-                        UpdatedDate = x.UpdatedDate
-                    })
+                    .Select(x => MapToDto(x))
                     .ToListAsync();
 
                 return new PagedResultDto<NewsDto>

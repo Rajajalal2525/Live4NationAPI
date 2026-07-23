@@ -21,9 +21,8 @@ namespace Live4Nation.BLL.DTOs
         [Required]
         public string Description { get; set; } = string.Empty;
 
-        [Required]
-        [StringLength(500)]
-        public string ThumbnailImage { get; set; } = string.Empty;
+        public ICollection<NewsImageCreateDto> NewsImages { get; set; } = new List<NewsImageCreateDto>();
+
 
         [StringLength(150)]
         public string? Author { get; set; }

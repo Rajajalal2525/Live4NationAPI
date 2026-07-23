@@ -18,11 +18,6 @@ namespace Live4Nation.BLL.Interfaces
         Task<NewsDto?> CreateAsync(NewsCreateUpdateDto dto);
         Task<bool> UpdateAsync(int id, NewsCreateUpdateDto dto);
         Task<bool> DeleteAsync(int id);
-        Task<long?> IncrementViewCountAsync(int id);
-
-        Task<NewsImageDto?> AddImageAsync(int newsId, NewsImageCreateDto dto);
-        Task<List<NewsImageDto>> GetImagesByNewsIdAsync(int newsId);
-        Task<bool> DeleteImageAsync(int imageId);
 
         // Home page task 
 
