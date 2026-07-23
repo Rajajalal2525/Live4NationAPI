@@ -475,8 +475,7 @@ namespace Live4Nation.BLL.Services
                 pageSize = pageSize < 1 ? 10 : pageSize;
 
                 // 2. Base Query Setup
-                IQueryable<News> query = _context.News
-                    .AsNoTracking()
+                IQueryable<News> query = NewsQuery()
                     .Where(x => x.IsActive);
 
                 // 3. Conditional Filtering

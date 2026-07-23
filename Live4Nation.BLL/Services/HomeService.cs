@@ -134,6 +134,7 @@ namespace Live4Nation.BLL.Services
             var allCategoryNews = await _context.News
                 .AsNoTracking()
                 .Include(x => x.Category)
+                .Include(x => x.NewsImages)
                 .Where(x => x.IsActive && categoryIds.Contains(x.CategoryId))
                 .OrderByDescending(x => x.PublishedDate)
                 .Select(x => new NewsDto
@@ -157,7 +158,16 @@ namespace Live4Nation.BLL.Services
                     ViewCount = x.ViewCount,
                     IsActive = x.IsActive,
                     CreatedDate = x.CreatedDate,
-                    UpdatedDate = x.UpdatedDate
+                    UpdatedDate = x.UpdatedDate,
+                    NewsImages = x.NewsImages.Select(img => new NewsImageDto
+                    {
+                        Id = img.Id,
+                        NewsId = img.NewsId,
+                        ImageUrl = img.ImageUrl,
+                        Caption = img.Caption,
+                        DisplayOrder = img.DisplayOrder,
+                        CreatedDate = img.CreatedDate
+                    }).ToList()
                 })
                 .ToListAsync();
 
