@@ -81,13 +81,9 @@ namespace Live4Nation.BLL.Services
 
             var heroTopStory = topStories.FirstOrDefault() ?? latestNews.FirstOrDefault();
 
-            var menu = categoriesData
-                .Where(x => x.IsActive)
-                .OrderBy(x => x.DisplayOrder)
-                .ThenBy(x => x.Name)
-                .ToList();
+            var menu = FilterActiveCategoryTree(categoriesData);
 
-            var categoryWiseNews = await BuildCategoryWiseNewsAsync(menu, categoryTake);
+            var categoryWiseNews = await BuildCategoryWiseNewsAsync(FlattenCategories(menu), categoryTake);
 
             var latestGallery = galleriesData
                 .Where(x => x.IsActive)
@@ -195,6 +191,40 @@ namespace Live4Nation.BLL.Services
             }
 
             return result;
+        }
+
+        private static List<CategoryDto> FilterActiveCategoryTree(IEnumerable<CategoryDto> categories)
+        {
+            return categories
+                .Where(category => category.IsActive)
+                .OrderBy(category => category.DisplayOrder)
+                .ThenBy(category => category.Name)
+                .Select(category => new CategoryDto
+                {
+                    Id = category.Id,
+                    Name = category.Name,
+                    Slug = category.Slug,
+                    DisplayOrder = category.DisplayOrder,
+                    IsActive = category.IsActive,
+                    ParentId = category.ParentId,
+                    CreatedDate = category.CreatedDate,
+                    UpdatedDate = category.UpdatedDate,
+                    SubCategories = FilterActiveCategoryTree(category.SubCategories)
+                })
+                .ToList();
+        }
+
+        private static List<CategoryDto> FlattenCategories(IEnumerable<CategoryDto> categories)
+        {
+            var flattenedCategories = new List<CategoryDto>();
+
+            foreach (var category in categories)
+            {
+                flattenedCategories.Add(category);
+                flattenedCategories.AddRange(FlattenCategories(category.SubCategories));
+            }
+
+            return flattenedCategories;
         }
 
         private static HomeAdvertisementsDto BuildAdvertisements(List<AdvertisementDto> allAdvertisements)

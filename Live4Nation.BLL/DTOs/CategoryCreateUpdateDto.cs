@@ -11,6 +11,8 @@ namespace Live4Nation.BLL.DTOs
         [StringLength(180)]
         public string? Slug { get; set; }
 
+        public int? ParentId { get; set; }
+
         public int DisplayOrder { get; set; } = 0;
 
         public bool IsActive { get; set; } = true;

@@ -54,34 +54,55 @@ namespace Live4Nation.API.Controllers
                 return BadRequest(new { message = "Category data cannot be null." });
             }
 
-            var created = await _categoryService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetCategoryById), new { id = created.Id }, created);
+            try
+            {
+                var created = await _categoryService.CreateAsync(dto);
+                return CreatedAtAction(nameof(GetCategoryById), new { id = created.Id }, created);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPut("categories/{id:int}")]
         public async Task<IActionResult> UpdateCategory(int id, [FromBody] CategoryCreateUpdateDto dto)
         {
-            var updated = await _categoryService.UpdateAsync(id, dto);
-
-            if (!updated)
+            try
             {
-                return NotFound(new { message = $"Category with ID {id} not found to update." });
-            }
+                var updated = await _categoryService.UpdateAsync(id, dto);
 
-            return Ok(new { message = "Category updated successfully." });
+                if (!updated)
+                {
+                    return NotFound(new { message = $"Category with ID {id} not found to update." });
+                }
+
+                return Ok(new { message = "Category updated successfully." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpDelete("categories/{id:int}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            var deleted = await _categoryService.DeleteAsync(id);
-
-            if (!deleted)
+            try
             {
-                return NotFound(new { message = $"Category with ID {id} not found." });
-            }
+                var deleted = await _categoryService.DeleteAsync(id);
 
-            return Ok(new { message = "Category deleted successfully." });
+                if (!deleted)
+                {
+                    return NotFound(new { message = $"Category with ID {id} not found." });
+                }
+
+                return Ok(new { message = "Category deleted successfully." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
         }
 
         #endregion

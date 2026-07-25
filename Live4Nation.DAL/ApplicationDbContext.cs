@@ -25,6 +25,12 @@ namespace Live4Nation.DAL.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Category>()
+                .HasOne(c => c.Parent)
+                .WithMany(c => c.SubCategories)
+                .HasForeignKey(c => c.ParentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Category>()
                 .HasMany(c => c.News)
                 .WithOne(n => n.Category)
                 .HasForeignKey(n => n.CategoryId)
