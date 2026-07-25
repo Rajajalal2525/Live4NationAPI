@@ -12,6 +12,10 @@ namespace Live4Nation.DAL.Entities
 
         public bool IsActive { get; set; } = true;
 
+        public int? ParentId { get; set; } 
+        public Category? Parent { get; set; }
+        public ICollection<Category> SubCategories { get; set; } = new List<Category>();
+
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
         public DateTime? UpdatedDate { get; set; }

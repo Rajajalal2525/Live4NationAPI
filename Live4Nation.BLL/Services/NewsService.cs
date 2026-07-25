@@ -256,7 +256,9 @@ namespace Live4Nation.BLL.Services
             entity.ThumbnailImage = orderedImages.FirstOrDefault()?.ImageUrl ?? string.Empty;
 
             // Update Images
-            var imageDtos = dto.NewsImages.ToDictionary(i => i.Id);
+            var imageDtos = dto.NewsImages
+                .Where(i => i.Id.HasValue)
+                .ToDictionary(i => i.Id!.Value);
             var existingImages = entity.NewsImages.ToDictionary(i => i.Id);
 
             // Remove images
@@ -320,6 +322,9 @@ namespace Live4Nation.BLL.Services
             {
                 return null;
             }
+
+            await _context.Database.ExecuteSqlInterpolatedAsync(
+                $"UPDATE News SET ViewCount = ViewCount + 1, UpdatedDate = {DateTime.UtcNow} WHERE Id = {news.Id}");
 
             var currentNewsDto = MapToDto(news);
 
@@ -815,10 +820,6 @@ namespace Live4Nation.BLL.Services
             {
                 return null;
             }
-
-            // Increment ViewCount and update UpdatedDate in a single efficient operation
-            await _context.Database.ExecuteSqlInterpolatedAsync(
-                $"UPDATE News SET ViewCount = ViewCount + 1, UpdatedDate = {DateTime.UtcNow} WHERE Id = {news.Id}");
 
             // Reuse the existing method to get all page details
             return await GetDetailPageAsync(news.Id);
